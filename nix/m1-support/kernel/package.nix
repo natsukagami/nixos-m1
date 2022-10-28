@@ -1,10 +1,12 @@
-{ pkgs, crossBuild ? false, _16KBuild ? false }: let
+{ pkgs, crossBuild ? false, _16KBuild ? false, kernelPatches ? [] }: let
   buildPkgs = if crossBuild then
     import (pkgs.path) {
       system = "x86_64-linux";
       crossSystem.system = "aarch64-linux";
     }
   else pkgs;
+
+  _kernelPatches = kernelPatches;
 
   localPkgs =
     # we do this so the config can be read on any system and not affect
@@ -37,8 +39,7 @@
         hash = "sha256-6Pceu4eBF8kl//8CV57+yfYnywZxNk17BU0YgLkGVc0=";
       };
 
-      kernelPatches = [
-      ] ++ lib.optionals (!_16KBuild) [
+      kernelPatches = _kernelPatches ++ lib.optionals (!_16KBuild) [
         # thanks to Sven Peter
         # https://lore.kernel.org/linux-iommu/20211019163737.46269-1-sven@svenpeter.dev/
         { name = "sven-iommu-4k";

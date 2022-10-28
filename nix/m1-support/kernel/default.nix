@@ -6,6 +6,7 @@
     boot.kernelPackages = pkgs.callPackage ./package.nix {
       crossBuild = config.boot.kernelBuildIsCross;
       _16KBuild = config.boot.kernelBuildIs16K;
+      kernelPatches = config.boot.kernelPatches;
     };
 
     # we definitely want to use CONFIG_ENERGY_MODEL, and
