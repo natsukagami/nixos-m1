@@ -1,4 +1,4 @@
-{ pkgs, _4KBuild ? false, kernelPatches ? [ ] }:
+{ pkgs, rustPlatform, callPackage, _4KBuild ? false, kernelPatches ? [ ] }:
 let
   localPkgs =
     # we do this so the config can be read on any system and not affect
@@ -57,6 +57,7 @@ let
           hash = "sha256-DIfYpxyF8rjrkyiR7qxVphBnezTZ3JF6GTspbtuIIhc=";
         };
 
+
         kernelPatches = [
         ] ++ lib.optionals _4KBuild [
           # thanks to Sven Peter
@@ -82,7 +83,15 @@ let
         extraMeta.branch = "6.1";
       } // (args.argsOverride or { });
 
-  linux_asahi = (pkgs.callPackage linux_asahi_pkg { });
+  linux_asahi = (pkgs.callPackage linux_asahi_pkg { }).overrideAttrs (oa: {
+    nativeBuildInputs = oa.nativeBuildInputs ++ [
+      rustPlatform.rust.rustc
+      rustPlatform.bindgenHook
+      (callPackage ./rust.nix { })
+    ];
+
+    RUST_LIB_SRC = "${rustPlatform.rustLibSrc}";
+  });
 in
 pkgs.recurseIntoAttrs (pkgs.linuxPackagesFor linux_asahi)
 
