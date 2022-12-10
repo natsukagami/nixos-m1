@@ -22,8 +22,6 @@ let
     });
 
 in
-rust-bindgen.override {
-  rust-bindgen-unwrapped = rust-bindgen-kernel-unwrapped;
-}
+rust-bindgen
 
 

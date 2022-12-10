@@ -30,7 +30,7 @@ let
     echo "{ }" >> $out
   '').outPath;
 
-  linux_asahi_pkg = { clang13Stdenv, lib, fetchFromGitHub, fetchpatch, linuxKernel, ... } @ args:
+  linux_asahi_pkg = { stdenv, lib, fetchFromGitHub, fetchpatch, linuxKernel, ... } @ args:
     let
       configfile = if kernelPatches == [ ] then ./config else
       pkgs.writeText "config" ''
@@ -44,8 +44,7 @@ let
     in
     linuxKernel.manualConfig
       rec {
-        stdenv = clang13Stdenv;
-        inherit lib;
+        inherit stdenv lib;
 
         version = "6.1.0-rc8-asahi";
         modDirVersion = version;
@@ -93,7 +92,6 @@ let
     ];
 
     RUST_LIB_SRC = "${rustPlatform.rustLibSrc}";
-    makeFlags = oa.makeFlags ++ [ "LLVM=1" ];
   });
 in
 pkgs.recurseIntoAttrs (pkgs.linuxPackagesFor linux_asahi)
